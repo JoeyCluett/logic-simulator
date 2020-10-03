@@ -12,13 +12,14 @@ static void logic_vector_verify_index(logic_vector_t* vec, int idx) {
     }
 }
 
-logic_vector_t* logic_vector_new(int sz) {
+logic_vector_t* logic_vector_new(int sz, logic_type type) {
     logic_vector_t* vec = (logic_vector_t*)malloc(sizeof(logic_vector_t));
-    return logic_vector_init(vec, sz);
+    return logic_vector_init(vec, sz, type);
 }
 
-logic_vector_t* logic_vector_init(logic_vector_t* vec, int sz) {
+logic_vector_t* logic_vector_init(logic_vector_t* vec, int sz, logic_type type) {
     vec->size     = sz;
+    vec->type     = type;
     vec->gate_ptr = (logic_gate_t**)malloc(sizeof(logic_gate_t*) * sz);
 
     int i;

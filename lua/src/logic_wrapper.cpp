@@ -14,6 +14,16 @@ static int lua_get_gate_output(lua_State* L) {
     return 1;
 }
 
+static int lua_get_constant_zero(lua_State* L) {
+    lua_pushlightuserdata(L, static_cast<void*>(ZERO));
+    return 1;
+}
+
+static int lua_get_constant_one(lua_State* L) {
+    lua_pushlightuserdata(L, static_cast<void*>(ONE));
+    return 1;
+}
+
 static const struct luaL_Reg regarray[] = {
 
     // allocator functions
@@ -46,6 +56,11 @@ static const struct luaL_Reg regarray[] = {
     { "logic_gate_init", lua_logic_gate_init },
     { "logic_gate_signal_set", lua_logic_gate_signal_set },
     { "logic_gate_get_output", lua_get_gate_output },
+
+    // get constants
+
+    { "get_constant_zero", lua_get_constant_zero },
+    { "get_constant_one",  lua_get_constant_one },
 
     // array ends with NULL, NULL
 

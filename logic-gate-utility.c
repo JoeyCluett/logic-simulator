@@ -287,8 +287,15 @@ logic_gate_t* SIGNAL(void) {
 }
 
 logic_gate_t* CONSTANT(int value) {
-    logic_gate_t* ptr = logic_gate_new(logic_gate_constant);
-    ptr->output_value = 1;
+    logic_gate_t* ptr = NULL;
+    
+    if(value == 0)      ptr = ZERO;
+    else if(value == 1) ptr = ONE;
+    else {
+        ptr = logic_gate_new(logic_gate_constant);
+        ptr->output_value = value;
+    }
+
     return ptr;
 }
 

@@ -14,52 +14,87 @@ GlobalDebug.set_debug_value(true);
 -- initialize the memory allocator. used to efficiently allocate logic gate 
 -- structs internally. Lua never actually allocates the structures used 
 -- internally by the C backend
-allocator_logic_init();
+allocator_logic_init(); -- THIS IS NOT OPTIONAL
 
 -- import module and connect inputs
 require("full_adder");
+require("Adder_74283");
 
-fa = FullAdder.new()
-bv = BitVector.new(3);
+set_input_vector_value = function(input_arr, value)
+    for i=1,4 do
+        input_arr[i].set_signal_value((value >> (i-1)) & 0x01);
+    end
+end
 
-fa.set_A(bv[0]);
-fa.set_B(bv[1]);
-fa.set_CarryIn(bv[2]);
+verify_results = function(a_arr, b_arr, r_arr, offset)
+    a_val = 0;
+    b_val = 0;
+    r_val = 0;
 
-sum = fa.get_Sum();
-car = fa.get_CarryOut();
+    for i=1,4 do
+        a_val = a_val | (a_arr[i].get_value() << (i-1));
+        b_val = b_val | (b_arr[i].get_value() << (i-1));
+        r_val = r_val | (r_arr[i].get_value() << (i-1));
+    end
 
-print('simulating...')
+    -- r_val has one additional bit
+    r_val = r_val | (r_arr[5].get_value() << 4);
 
-bv.set_values('000');
-Gate.simulate();
-print("000 = sum: ", sum.get_value(), ", carry: ", car.get_value());
+    -- all three numbers have been built up   
+    print(a_val .. " + " .. b_val .. " + " .. offset .. " = " .. r_val);
+    if (a_val + b_val + offset) ~= r_val then
+        error(a_val .. " + " .. b_val .. " + " .. offset .. " does not equal " .. r_val);
+    end
+end
 
-bv.set_values('001');
-Gate.simulate();
-print("001 = sum: ", sum.get_value(), ", carry: ", car.get_value());
+-- allocate module and input signals. capture outputs
+adder    = Adder_74283.new();
+ci       = Gate.SIGNAL();
+inputs_a = { Gate.SIGNAL(), Gate.SIGNAL(), Gate.SIGNAL(), Gate.SIGNAL() };
+inputs_b = { Gate.SIGNAL(), Gate.SIGNAL(), Gate.SIGNAL(), Gate.SIGNAL() };
+outputs  = { adder.get_Sum(1), adder.get_Sum(2), adder.get_Sum(3), adder.get_Sum(4), adder.get_CarryOut() };
 
-bv.set_values('010');
-Gate.simulate();
-print("010 = sum: ", sum.get_value(), ", carry: ", car.get_value());
+set_input_vector_value(inputs_a, 0);
+set_input_vector_value(inputs_b, 0);
 
-bv.set_values('011');
-Gate.simulate();
-print("011 = sum: ", sum.get_value(), ", carry: ", car.get_value());
+-- set adder inputs and outputs
+for i=1,4 do
+    adder.set_A(i, inputs_a[i]);
+    adder.set_B(i, inputs_b[i]);
+end
+adder.set_CarryIn(ci);
 
-bv.set_values('100');
-Gate.simulate();
-print("100 = sum: ", sum.get_value(), ", carry: ", car.get_value());
+-- simulate and verify results
 
-bv.set_values('101');
-Gate.simulate();
-print("101 = sum: ", sum.get_value(), ", carry: ", car.get_value());
+ci.set_signal_value(0);
 
-bv.set_values('110');
-Gate.simulate();
-print("110 = sum: ", sum.get_value(), ", carry: ", car.get_value());
+for n=0,15 do
+    set_input_vector_value(inputs_a, n);
 
-bv.set_values('111');
-Gate.simulate();
-print("111 = sum: ", sum.get_value(), ", carry: ", car.get_value());
+    for m=0,15 do
+        set_input_vector_value(inputs_b, m);
+
+        Gate.simulate();
+        verify_results(inputs_a, inputs_b, outputs, 0);
+
+    end
+end
+
+ci.set_signal_value(1);
+
+-- test with carry in bit set
+for n=0,15 do
+    set_input_vector_value(inputs_a, n);
+
+    for m=0,15 do
+        set_input_vector_value(inputs_b, m);
+
+        Gate.simulate();
+        verify_results(inputs_a, inputs_b, outputs, 1);
+
+    end
+end
+
+
+ci.set_signal_value(1);
 

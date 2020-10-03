@@ -19,12 +19,11 @@ end
 -- replace print with something more useful
 print = function(...)
     if GlobalDebug.get_debug_value() then
-        --print_wrapper(unpack(args));    
-        -- unpack was deprecated in 5.1 and removed in 5.2
 
         for _, v in ipairs({...}) do
             io.write(tostring(v));
         end
+
         io.write("\n");
 
     end

@@ -18,22 +18,16 @@ utility_XNOR = _sim.utility_XNOR;
 utility_FLIPFLOP = _sim.utility_FLIPFLOP;
 utility_CONSTANT = _sim.utility_CONSTANT;
 utility_SIGNAL   = _sim.utility_SIGNAL;
-
 utility_logic_gate_add_input = _sim.utility_logic_gate_add_input;
 utility_logic_gate_simulate  = _sim.utility_logic_gate_simulate;
-
 utility_logic_gate_simulate_callback  = _sim.utility_logic_gate_simulate_callback;
 utility_logic_gate_flipflop_set_clock = _sim.utility_logic_gate_flipflop_set_clock;
 utility_logic_gate_flipflop_set_data  = _sim.utility_logic_gate_flipflop_set_data;
 
 logic_gate_new  = _sim.logic_gate_new;
 logic_gate_init = _sim.logic_gate_init;
-
 logic_gate_signal_set = _sim.logic_gate_signal_set;
 logic_gate_get_output = _sim.logic_gate_get_output;
 
-local _bits = require("bitops");
-print("moving 'bitops' package functions into global namespace...");
-
-bit_at = _bits.lua_bitops_bit_at;
-
+get_constant_zero = _sim.get_constant_zero;
+get_constant_one  = _sim.get_constant_one;

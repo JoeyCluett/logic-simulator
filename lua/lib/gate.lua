@@ -41,13 +41,35 @@ Gate.new = function(type, initial_value)
     -- special gate types
     elseif type == Gate.type_flipflop then  self.ptr = utility_FLIPFLOP();
     elseif type == Gate.type_none then      self.ptr = utility_NONE();
-    elseif type == Gate.type_constant then  self.ptr = utility_CONSTANT(initial_value);
+    elseif type == Gate.type_constant then
+
+        if initial_value == 0 then
+            self.ptr = get_constant_zero();
+        elseif initial_value == 1 then
+            self.ptr = get_constant_one();
+        else
+            print('undefined constant ' .. initial_value);
+            self.ptr = utility_CONSTANT(initial_value);
+        end
+
     elseif type == Gate.type_signal then    self.ptr = utility_SIGNAL();
     else
         error("error in Gate.new() : invalid gate type specified");
     end
 
-    self.add_input          = function(gate) utility_logic_gate_add_input(self.ptr, gate.ptr); end
+    self.add_input = function(...)     
+        for _,v in ipairs({...}) do
+            utility_logic_gate_add_input(self.ptr, v.ptr); 
+        end
+    end
+
+    self.add_inv_input = function(gate)
+        -- create intermediate NOR gate
+        local g_not = Gate.NOR();
+        g_not.add_input(gate);
+        utility_logic_gate_add_input(self.ptr, g_not.ptr);
+    end
+
     self.set_signal_value   = function(value) logic_gate_signal_set(self.ptr, value); end
     self.set_flipflop_clock = function(gate) utility_logic_gate_flipflop_set_clock(self.ptr, gate.ptr); end
     self.set_flipflop_data  = function(gate) utility_logic_gate_flipflop_set_data(self.ptr, gate.ptr); end
@@ -72,3 +94,11 @@ Gate.SIGNAL   = function()      return Gate.new(Gate.type_signal,   nil) end
 
 Gate.ONE  = Gate.CONSTANT(1)
 Gate.ZERO = Gate.CONSTANT(0)
+
+-- more convenient than calling .add_input multiple times
+Gate.add_input_list = function(gate, inputlist)
+    for k, v in ipairs(inputlist) do
+        gate.add_input(v);
+    end
+end
+
