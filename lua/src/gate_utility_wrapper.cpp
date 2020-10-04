@@ -83,13 +83,15 @@ int lua_logic_gate_flipflop_set_data( lua_State* L ) {
 }
 
 int lua_logic_gate_simulate( lua_State* L) {
-    logic_gate_simulate();
-    return 0;
+    int sim_cycles = logic_gate_simulate();
+    lua_pushinteger(L, sim_cycles);
+    return 1;
 }
 
 int lua_logic_gate_simulate_callback( lua_State* L) {
-    logic_gate_simulate();
-    return 0;
+    int sim_cycles = logic_gate_simulate();
+    lua_pushinteger(L, sim_cycles);
+    return 1;
 }
 
 } // extern "C"

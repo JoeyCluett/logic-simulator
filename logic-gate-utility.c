@@ -194,30 +194,31 @@ static int logic_gate_update_cycle(void) {
     return changes;
 }
 
-void logic_gate_simulate(void) {
-    
-    int ncycles = 1;
+int logic_gate_simulate(void) {
+    int ncycles    = 1;
+    int sim_cycles = 0;
 
     while(ncycles) {
         logic_gate_fetch_cycle();
-        //fprintf(stderr, "        fetch cycle complete...\n");
         ncycles = logic_gate_update_cycle();
-        //fprintf(stderr, "        update cycle complete...\n");
+        sim_cycles++;
     }
 
+    return sim_cycles;
 }
 
-void logic_gate_simulate_callback(void(*callb)(void)) {
-    int ncycles = 1;
+int logic_gate_simulate_callback(void(*callb)(void)) {
+    int ncycles    = 1;
+    int sim_cycles = 0;
 
     while(ncycles) {
         logic_gate_fetch_cycle();
-        //fprintf(stderr, "        fetch cycle complete...\n");
         ncycles = logic_gate_update_cycle();
-        //fprintf(stderr, "        update cycle complete...\n");
-    
+        sim_cycles++;
         callb();
     }
+
+    return sim_cycles;
 }
 
 void logic_gate_flipflop_set_clock(logic_gate_t* g, logic_gate_t* clk) {

@@ -31,11 +31,10 @@ void logic_gate_flipflop_set_data(logic_gate_t* g, logic_gate_t* data);
 
 // actual meat of the simulation occurs with this function. this function already 
 // knows which gates are relevant to the simulation
-void logic_gate_simulate(void);
+int logic_gate_simulate(void);
 
 // modified simulate function. calls the callback every cycle
-void logic_gate_simulate_callback(void(*callb)(void));
-
+int logic_gate_simulate_callback(void(*callb)(void));
 
 #ifdef __cplusplus
 }

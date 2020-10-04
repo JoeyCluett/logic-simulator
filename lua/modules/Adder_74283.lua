@@ -5,7 +5,6 @@ require("gate");
 Adder_74283 = {}
 
 Adder_74283.new = function()
-
     print("Adder_74283.new");
 
     function input_chunk()

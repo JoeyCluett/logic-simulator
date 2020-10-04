@@ -19,6 +19,7 @@ allocator_logic_init(); -- THIS IS NOT OPTIONAL
 -- import module and connect inputs
 require("full_adder");
 require("Adder_74283");
+require("Adder_CLA_4Bit");
 
 set_input_vector_value = function(input_arr, value)
     for i=1,4 do
@@ -41,14 +42,15 @@ verify_results = function(a_arr, b_arr, r_arr, offset)
     r_val = r_val | (r_arr[5].get_value() << 4);
 
     -- all three numbers have been built up   
-    print(a_val .. " + " .. b_val .. " + " .. offset .. " = " .. r_val);
+    --print(a_val .. " + " .. b_val .. " + " .. offset .. " = " .. r_val);
     if (a_val + b_val + offset) ~= r_val then
         error(a_val .. " + " .. b_val .. " + " .. offset .. " does not equal " .. r_val);
     end
 end
 
 -- allocate module and input signals. capture outputs
-adder    = Adder_74283.new();
+--adder    = Adder_74283.new();
+adder    = Adder_CLA_4Bit.new();
 ci       = Gate.SIGNAL();
 inputs_a = { Gate.SIGNAL(), Gate.SIGNAL(), Gate.SIGNAL(), Gate.SIGNAL() };
 inputs_b = { Gate.SIGNAL(), Gate.SIGNAL(), Gate.SIGNAL(), Gate.SIGNAL() };
@@ -74,7 +76,7 @@ for n=0,15 do
     for m=0,15 do
         set_input_vector_value(inputs_b, m);
 
-        Gate.simulate();
+        ncycles = Gate.simulate();
         verify_results(inputs_a, inputs_b, outputs, 0);
 
     end
@@ -89,12 +91,12 @@ for n=0,15 do
     for m=0,15 do
         set_input_vector_value(inputs_b, m);
 
-        Gate.simulate();
+        ncycles = Gate.simulate();
         verify_results(inputs_a, inputs_b, outputs, 1);
+        --io.write('cycles: ' .. ncycles .. '\n');
 
     end
 end
-
 
 ci.set_signal_value(1);
 

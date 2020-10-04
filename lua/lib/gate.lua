@@ -23,7 +23,7 @@ Gate = {
 
 -- simulation function evaluates state of current gates
 Gate.simulate = function()
-    utility_logic_gate_simulate();
+    return utility_logic_gate_simulate();
 end
 
 Gate.new = function(type, initial_value)
@@ -101,4 +101,5 @@ Gate.add_input_list = function(gate, inputlist)
         gate.add_input(v);
     end
 end
+
 
