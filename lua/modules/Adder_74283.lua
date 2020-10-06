@@ -37,12 +37,8 @@ Adder_74283.new = function()
 
     local self = {};
 
-    self.inputs = {
-        input_chunk(),
-        input_chunk(),
-        input_chunk(),
-        input_chunk()
-    };
+    self.inputs = {};
+    for i=0,3 do self.inputs[i] = input_chunk(); end
 
     self.CO_nor = Gate.NOR();
     self.CI_not = Gate.NOR();
@@ -57,14 +53,14 @@ Adder_74283.new = function()
     -- ====================================================
 
     self.get_Sum = function(idx)
-        if idx < 1 or idx > 4 then
-            error("Adder_74283.get_Sum() : index out of range");
+        if idx < 0 or idx > 3 then
+            error("Adder_74283.get_Sum() : index \'" .. idx .. "\' out of range");
         end
 
-        if idx == 1     then return self.Sum1_xor;
-        elseif idx == 2 then return self.Sum2_xor;
-        elseif idx == 3 then return self.Sum3_xor;
-        elseif idx == 4 then return self.Sum4_xor;
+        if idx == 0     then return self.Sum1_xor;
+        elseif idx == 1 then return self.Sum2_xor;
+        elseif idx == 2 then return self.Sum3_xor;
+        elseif idx == 3 then return self.Sum4_xor;
         end
 
     end
@@ -74,14 +70,14 @@ Adder_74283.new = function()
     end
 
     self.set_A = function(idx, gate)
-        if idx < 1 or idx > 4 then
-            error("Adder_74283.set_A() : index out of range")
+        if idx < 0 or idx > 3 then
+            error("Adder_74283.set_A() : index \'" .. idx .. "\' out of range")
         end
         self.inputs[idx].set_A(gate);
     end
 
     self.set_B = function(idx, gate)
-        if idx < 1 or idx > 4 then
+        if idx < 0 or idx > 3 then
             error("Adder_74283.set_B() : index out of range")
         end
         self.inputs[idx].set_B(gate);
@@ -93,21 +89,21 @@ Adder_74283.new = function()
 
     -- convenient wrappers over input names
 
-    local i1_c = self.inputs[1].get_Carry();
-    local i2_c = self.inputs[2].get_Carry();
-    local i3_c = self.inputs[3].get_Carry();
-    local i4_c = self.inputs[4].get_Carry();
+    local i1_c = self.inputs[0].get_Carry();
+    local i2_c = self.inputs[1].get_Carry();
+    local i3_c = self.inputs[2].get_Carry();
+    local i4_c = self.inputs[3].get_Carry();
 
-    local i1_s = self.inputs[1].get_Sum();
-    local i2_s = self.inputs[2].get_Sum();
-    local i3_s = self.inputs[3].get_Sum();
-    local i4_s = self.inputs[4].get_Sum();
+    local i1_s = self.inputs[0].get_Sum();
+    local i2_s = self.inputs[1].get_Sum();
+    local i3_s = self.inputs[2].get_Sum();
+    local i4_s = self.inputs[3].get_Sum();
 
     -- ====================================================
     -- Carry Out logic
     -- ====================================================
     
-    self.CO_nor.add_input(self.inputs[4].get_Sum());
+    self.CO_nor.add_input(self.inputs[3].get_Sum());
     
     local C4_and_0 = Gate.AND();
     local C4_and_1 = Gate.AND();
@@ -181,7 +177,7 @@ Adder_74283.new = function()
     self.Sum2_xor.add_input(S2_nor_0);
 
     -- ====================================================
-    -- Sum-2 logic
+    -- Sum-1 logic
     -- ====================================================
 
     local S1_and = Gate.AND();
@@ -193,8 +189,6 @@ Adder_74283.new = function()
 
     self.Sum1_xor.add_input(S1_and);
     self.Sum1_xor.add_input(S1_not);
-
-
 
     -- return fully constructed Adder
     return self;

@@ -26,7 +26,8 @@ Gate.simulate = function()
     return utility_logic_gate_simulate();
 end
 
-Gate.new = function(type, initial_value)
+
+Gate.new = function(type, initial_value, ...)
 
     local self = {};
    
@@ -75,16 +76,21 @@ Gate.new = function(type, initial_value)
     self.set_flipflop_data  = function(gate) utility_logic_gate_flipflop_set_data(self.ptr, gate.ptr); end
     self.get_value          = function() return logic_gate_get_output(self.ptr); end
 
+    -- input_list may contain a list of input gates
+    for _, v in ipairs({...}) do
+        self.add_input(v);
+    end
+
     return self;
 end
 
 -- standard gate wrappers
-Gate.AND  = function() return Gate.new(Gate.type_and,  nil) end
-Gate.NAND = function() return Gate.new(Gate.type_nand, nil) end
-Gate.OR   = function() return Gate.new(Gate.type_or,   nil) end
-Gate.NOR  = function() return Gate.new(Gate.type_nor,  nil) end
-Gate.XOR  = function() return Gate.new(Gate.type_xor,  nil) end
-Gate.XNOR = function() return Gate.new(Gate.type_xnor, nil) end
+Gate.AND  = function(...) return Gate.new(Gate.type_and,  nil, ...) end
+Gate.NAND = function(...) return Gate.new(Gate.type_nand, nil, ...) end
+Gate.OR   = function(...) return Gate.new(Gate.type_or,   nil, ...) end
+Gate.NOR  = function(...) return Gate.new(Gate.type_nor,  nil, ...) end
+Gate.XOR  = function(...) return Gate.new(Gate.type_xor,  nil, ...) end
+Gate.XNOR = function(...) return Gate.new(Gate.type_xnor, nil, ...) end
 
 -- special gate wrappers
 Gate.FLIPFLOP = function()      return Gate.new(Gate.type_flipflop, nil) end
