@@ -2,6 +2,7 @@
 require("simload");
 require("gate");
 require("Adder_CLA_4Bit");
+require("LookAheadCarryUnit");
 
 Adder_CLA_16Bit = {};
 
@@ -14,10 +15,13 @@ Adder_CLA_16Bit.new = function()
         self.adders[i] = Adder_CLA_4Bit.new(); 
     end
 
-    self.c0_  = Gate.OR();
+    -- ==========================================
+    -- internal logic
+    -- ==========================================
+
+    self.c0_ = Gate.OR();
 
     local c0  = self.c0_;
-
     local p0  = self.adders[0].get_PG();
     local g0  = self.adders[0].get_GG();
     local p4  = self.adders[1].get_PG();
@@ -27,41 +31,24 @@ Adder_CLA_16Bit.new = function()
     local p12 = self.adders[3].get_PG();
     local g12 = self.adders[3].get_GG();
 
-    local c4 = 
-        Gate.OR(
-            g0,
-            Gate.AND( c0, p0 ));
-
-    local c8 = 
-        Gate.OR(
-            g4,
-            Gate.AND( g0, p4 ),
-            Gate.AND( c0, p0, p4 ));
-
-    local c12 =
-        Gate.OR(
-            g8,
-            Gate.AND( g4, p8 ),
-            Gate.AND( g0, p4, p8 ),
-            Gate.AND( c0, p0, p4, p8 ));
-
-    self.c16_ =
-        Gate.OR(
-            g12,
-            Gate.AND( g8, p12 ),
-            Gate.AND( g4, p8, p12 ),
-            Gate.AND( g0, p4, p8, p12 ),
-            Gate.AND( c0, p0, p4, p8, p12 ));
+    local clu = LookAheadCarryUnit.new(c0, g0, p0, g4, p4, g8, p8, g12, p12);
 
     -- connect carries to 4-bit adders
-    self.adders[0].set_CarryIn(self.c0_);
-    self.adders[1].set_CarryIn(c4);
-    self.adders[2].set_CarryIn(c8);
-    self.adders[3].set_CarryIn(c12);
+    self.adders[0].set_CarryIn(clu.c0);
+    self.adders[1].set_CarryIn(clu.c1);
+    self.adders[2].set_CarryIn(clu.c2);
+    self.adders[3].set_CarryIn(clu.c3);
+
+    self.c16_   = clu.c4;
+    self.PG_and = clu.PG_and;
+    self.GG_or  = clu.GG_or;
 
     -- ==========================================
     -- interface methods
     -- ==========================================
+
+    self.get_PG = function() return self.PG_and; end
+    self.get_GG = function() return self.GG_or;  end
 
     self.get_CarryOut = function() return self.c16_; end
     self.set_CarryIn  = function(gate) self.c0_.add_input(gate); end

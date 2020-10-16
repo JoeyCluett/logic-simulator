@@ -18,7 +18,8 @@ Gate = {
     type_flipflop = 6,
     type_none     = 7, -- used by pre-allocated gates until they are ready for use
     type_constant = 8,
-    type_signal   = 9  -- input type
+    type_signal   = 9, -- input type
+    type_forward  = 10 -- this type ONLY exists in Lua, there is no corresponding type on the backend
 }
 
 -- simulation function evaluates state of current gates
@@ -31,25 +32,25 @@ Gate.new = function(type, initial_value, ...)
 
     local self = {};
    
+    local normal_gate_type = false;
+
     -- standard gate types
-    if type == Gate.type_and then       self.ptr = utility_AND();
-    elseif type == Gate.type_nand then  self.ptr = utility_NAND();
-    elseif type == Gate.type_or then    self.ptr = utility_OR();
-    elseif type == Gate.type_nor then   self.ptr = utility_NOR();
-    elseif type == Gate.type_xor then   self.ptr = utility_XOR();
-    elseif type == Gate.type_xnor then  self.ptr = utility_XNOR();
+    if type == Gate.type_and then       self.ptr = utility_AND();  normal_gate_type = true;
+    elseif type == Gate.type_nand then  self.ptr = utility_NAND(); normal_gate_type = true;
+    elseif type == Gate.type_or then    self.ptr = utility_OR();   normal_gate_type = true;
+    elseif type == Gate.type_nor then   self.ptr = utility_NOR();  normal_gate_type = true;
+    elseif type == Gate.type_xor then   self.ptr = utility_XOR();  normal_gate_type = true;
+    elseif type == Gate.type_xnor then  self.ptr = utility_XNOR(); normal_gate_type = true;
 
     -- special gate types
     elseif type == Gate.type_flipflop then  self.ptr = utility_FLIPFLOP();
     elseif type == Gate.type_none then      self.ptr = utility_NONE();
     elseif type == Gate.type_constant then
 
-        if initial_value == 0 then
-            self.ptr = get_constant_zero();
-        elseif initial_value == 1 then
-            self.ptr = get_constant_one();
+        if     initial_value == 0 then self.ptr = get_constant_zero();
+        elseif initial_value == 1 then self.ptr = get_constant_one();
         else
-            print('undefined constant ' .. initial_value);
+            print('Gate.new() : undefined constant ' .. initial_value);
             self.ptr = utility_CONSTANT(initial_value);
         end
 
@@ -58,29 +59,40 @@ Gate.new = function(type, initial_value, ...)
         error("error in Gate.new() : invalid gate type specified");
     end
 
-    self.add_input = function(...)     
-        for _,v in ipairs({...}) do
-            utility_logic_gate_add_input(self.ptr, v.ptr); 
+    -- ==================================================================================
+    -- interface to gate is different depending on what type of gate it is
+    -- ==================================================================================
+    if normal_gate_type == true then
+
+        self.add_input = function(...)     
+            for _,v in ipairs({...}) do
+                utility_logic_gate_add_input(self.ptr, v.ptr); 
+            end
         end
+    
+        self.add_inv_input = function(gate)
+            -- create intermediate NOR gate
+            local g_not = Gate.NOR(gate);
+            utility_logic_gate_add_input(self.ptr, g_not.ptr);
+        end
+
+        -- input_list may contain a list of input gates
+        for _, v in ipairs({...}) do
+            self.add_input(v);
+        end
+
+    elseif type == Gate.type_flipflop then
+
+        self.set_flipflop_clock = function(gate) utility_logic_gate_flipflop_set_clock(self.ptr, gate.ptr); end
+        self.set_flipflop_data  = function(gate) utility_logic_gate_flipflop_set_data(self.ptr, gate.ptr); end
+    
+    elseif type == Gate.type_signal then
+    
+        self.set_signal_value   = function(value) logic_gate_signal_set(self.ptr, value); end
+    
     end
 
-    self.add_inv_input = function(gate)
-        -- create intermediate NOR gate
-        local g_not = Gate.NOR();
-        g_not.add_input(gate);
-        utility_logic_gate_add_input(self.ptr, g_not.ptr);
-    end
-
-    self.set_signal_value   = function(value) logic_gate_signal_set(self.ptr, value); end
-    self.set_flipflop_clock = function(gate) utility_logic_gate_flipflop_set_clock(self.ptr, gate.ptr); end
-    self.set_flipflop_data  = function(gate) utility_logic_gate_flipflop_set_data(self.ptr, gate.ptr); end
-    self.get_value          = function() return logic_gate_get_output(self.ptr); end
-
-    -- input_list may contain a list of input gates
-    for _, v in ipairs({...}) do
-        self.add_input(v);
-    end
-
+    self.get_value = function() return logic_gate_get_output(self.ptr); end
     return self;
 end
 

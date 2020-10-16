@@ -1,0 +1,33 @@
+c1 = g0 + p0c0
+c2 = g1 + p1c1
+c3 = g2 + p2c2
+c4 = g3 + p3c3
+c5 = g4 + p4c4
+c6 = g5 + p5c5
+c7 = g6 + p6c6
+c8 = g7 + p7c7
+
+========================================
+
+c1 = g0 + p0c0
+
+c2 = g1 + p1( g0 + p0c0 ) 
+c2 = g1 + p1g0 + p1p0c0
+
+c3 = g2 + p2( g1 + p1g0 + p1p0c0 )
+c3 = g2 + p2g1 + p2p1g0 + p2p1p0c0
+
+c4 = g3 + p3( g2 + p2g1 + p2p1g0 + p2p1p0c0 ) 
+c4 = g3 + p3g2 + p3p2g1 + p3p2p1g0 + p3p2p1p0c0
+
+c5 = g4 + p4( g3 + p3g2 + p3p2g1 + p3p2p1g0 + p3p2p1p0c0 ) 
+c5 = g4 + p4g3 + p4p3g2 + p4p3p2g1 + p4p3p2p1g0 + p4p3p2p1p0c0
+
+c6 = g5 + p5( g4 + p4g3 + p4p3g2 + p4p3p2g1 + p4p3p2p1g0 + p4p3p2p1p0c0 ) 
+c6 = g5 + p5g4 + p5p4g3 + p5p4p3g2 + p5p4p3p2g1 + p5p4p3p2p1g0 + p5p4p3p2p1p0c0
+
+c7 = g6 + p6( g5 + p5g4 + p5p4g3 + p5p4p3g2 + p5p4p3p2g1 + p5p4p3p2p1g0 + p5p4p3p2p1p0c0 ) 
+c7 = g6 + p6g5 + p6p5g4 + p6p5p4g3 + p6p5p4p3g2 + p6p5p4p3p2g1 + p6p5p4p3p2p1g0 + p6p5p4p3p2p1p0c0
+
+c8 = g7 + p7( g6 + p6g5 + p6p5g4 + p6p5p4g3 + p6p5p4p3g2 + p6p5p4p3p2g1 + p6p5p4p3p2p1g0 + p6p5p4p3p2p1p0c0 )
+c8 = g7 + p7g6 + p7p6g5 + p7p6p5g4 + p7p6p5p4g3 + p7p6p5p4p3g2 + p7p6p5p4p3p2g1 + p7p6p5p4p3p2p1g0 + p7p6p5p4p3p2p1p0c0

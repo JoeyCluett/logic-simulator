@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "logic-gates.h"
 
 logic_gate_t* ONE;
@@ -9,6 +12,7 @@ void logic_gate_signal_set(logic_gate_t* g, int value) {
     }
     else {
         fprintf(stderr, "logic_gate_signal_set : cannot manually set output value on non-logic_gate_signal type");
+        exit(1);
     }
 }
 
@@ -47,6 +51,11 @@ logic_gate_t* logic_gate_init(logic_gate_t* g, logic_type type) {
         case logic_gate_constant:
         case logic_gate_signal:
             break; // do nothing
+        case logic_gate_forward:
+            g->_forward.buffer_list = NULL; // NULL means list is empty
+            g->_forward.input_gate  = NULL; // NULL means no input gate
+            g->_forward.next_forward_gate = NULL: // NULL means no chained _forward type
+            break;
         default:
             fprintf(stderr, "logic_gate_init : invalid logic gate type '%d'", (int)type);
             exit(1); // exit error

@@ -260,25 +260,93 @@ void logic_gate_flipflop_set_data(logic_gate_t* g, logic_gate_t* data) {
 }
 
 // adds gate input. input gate is pointer to another logic gate i.e. its output
+// every combination needs to account for the presence of forwarding gates
 void logic_gate_add_input(logic_gate_t* g, logic_gate_t* input) {
-    // cant add inputs to flipflops or none types
-    if(g->gate_type != logic_gate_flipflop &&
-            g->gate_type != logic_gate_none &&
-            g->gate_type != logic_gate_constant &&
-            g->gate_type != logic_gate_signal) {
 
-        // allocate new logic_input_t struct
-        logic_input_t* new_input = logic_input_alloc();
-        new_input->output_ptr = &(input->output_value);
+    if(g->type == logic_gate_forward && input->type == logic_gate_forward) {
+        // chaining forward gates is tricky
+        if(input->_forward.next_foward_gate == NULL) {
+            input->_forward.next_foward_gate = g;
+        }
+        else {
+            fprintf(stderr, "logic_gate_add_input : cannot chain more than one forward gate to same destination forward gate")
+            exit(1);
+        }
+    }
+    else if(g->type == logic_gate_forward && input->type != logic_gate_forward) {
 
-        // place new input at beginning of list of inputs
-        new_input->next = g->gate.inputs;
-        g->gate.inputs = new_input;
-        g->gate.n_inputs++;
+        // cannot forward more than one input gate
+        if(g->_forward.input_gate != NULL) {
+            fprintf(stderr, "logic_gate_add_input : cannot set more than one input for forward gate");
+            exit(1);
+        }
+
+        // keep this reference in case additional gates ever need to be forwarded to
+        g->_forward.input_gate = input;
+
+        // if we have gates, iterate through and attach this input to them
+        if(g->_forward.buffer_list != NULL) {
+            logic_input_t* iter = g->_forward.buffer_list;
+
+            while(iter) {
+                logic_gate_add_input(iter->output_ptr, input);
+                iter = iter->next;
+            }
+
+            // now that we have forwarded, we can delete our references to downstream gates
+            iter = g->_forward.buffer_list;
+            while(iter) {
+                logic_input_t* next_ptr = iter->next;
+                free(iter);
+                iter = next_ptr;
+            }
+            g->_forward.buffer_list = NULL;
+        }
+
+        // if there is a chained forward gate ahead, forward input to it
+        if(g->_forward.next_foward_gate != NULL) {
+            logic_gate_add_input(g->_forward.next_forward_gate, input)
+        }
+
+    }
+    else if(g->type != logic_gate_forward && input->type == logic_gate_forward) {
+        
+        if(input->_forward.input_gate == NULL) {
+            // input hasnt been set yet. THATS OK!
+
+            logic_input_t* logic_input_ptr = logic_input_new();
+            logic_input_ptr->next = input->_forward.buffer_list;
+            logic_input_ptr->output_ptr = g; // buffer for later reference
+
+            input->_forward.buffer_list = logic_input_ptr;
+
+        }
+        else {
+            // input has been set, just forward it to this gate now
+            logic_gate_add_input(g, input->_forward.input_gate);
+        }
+
     }
     else {
-        fprintf(stderr, "logic_gate_add_input : cannot add input to logic_gate_flipflop or logic_gate_none type\n");
-        exit(1);
+        // cant add inputs to flipflops, none types, constants or signals
+        if(g->gate_type != logic_gate_flipflop &&
+                g->gate_type != logic_gate_none &&
+                g->gate_type != logic_gate_constant &&
+                g->gate_type != logic_gate_signal) {
+
+                // allocate new logic_input_t struct
+                logic_input_t* new_input = logic_input_alloc();
+                new_input->output_ptr = &(input->output_value);
+
+                // place new input at beginning of list of inputs
+                new_input->next = g->gate.inputs;
+                g->gate.inputs = new_input;
+                g->gate.n_inputs++;
+        }
+        else {
+            fprintf(stderr, "logic_gate_add_input : cannot add input to logic_gate_flipflop or logic_gate_none type\n");
+            exit(1);
+        }
     }
 }
 
@@ -333,6 +401,11 @@ logic_gate_t* XNOR(void) {
 logic_gate_t* FLIPFLOP(void) {
     logic_gate_t* gptr = logic_gate_alloc();
     return logic_gate_init(gptr, logic_gate_flipflop);
+}
+
+logic_gate_t* FORWARD(void) {
+    logic_gate_t* gptr = logic_gate_new(logic_gate_forward);
+    return gptr;
 }
 
 #ifdef __cplusplus

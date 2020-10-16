@@ -5,7 +5,7 @@ require("gate");
 Adder_CLA_1Bit = {};
 
 Adder_CLA_1Bit.new = function(has_carry_out)
-    print("Adder_CLA_1Bit.new");
+    -- print("Adder_CLA_1Bit.new");
 
     local self = {};
 

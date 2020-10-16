@@ -15,8 +15,17 @@ extern "C" {
 //#define LOGIC_INPUT_ALLOCATOR_CHUNK_SIZE 1
 
 // try to allocate chunks of ~1KB
-#define LOGIC_GATE_ALLOCATOR_CHUNK_SIZE  (1024 - 16) / sizeof(logic_gate_t)
-#define LOGIC_INPUT_ALLOCATOR_CHUNK_SIZE (1024 - 16) / sizeof(logic_input_t)
+//#define LOGIC_GATE_ALLOCATOR_CHUNK_SIZE  (1024 - 16) / sizeof(logic_gate_t)
+//#define LOGIC_INPUT_ALLOCATOR_CHUNK_SIZE (1024 - 16) / sizeof(logic_input_t)
+
+// try to allocate chunks of ~16KB
+//#define LOGIC_GATE_ALLOCATOR_CHUNK_SIZE  ((16 * 1024) - 16) / sizeof(logic_gate_t)
+//#define LOGIC_INPUT_ALLOCATOR_CHUNK_SIZE ((16 * 1024) - 16) / sizeof(logic_input_t)
+
+// try to allocate chunks of ~4KB
+#define LOGIC_GATE_ALLOCATOR_CHUNK_SIZE  ((4 * 1024) - 16) / sizeof(logic_gate_t)
+#define LOGIC_INPUT_ALLOCATOR_CHUNK_SIZE ((4 * 1024) - 16) / sizeof(logic_input_t)
+
 
 typedef struct logic_gate_chunk_t {
     struct logic_gate_chunk_t* next; // maintain list of malloc()'ed chunks

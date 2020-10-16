@@ -21,6 +21,7 @@ logic_gate_t* XNOR(void);
 logic_gate_t* FLIPFLOP(void);
 logic_gate_t* CONSTANT(int value);
 logic_gate_t* SIGNAL(void);
+logic_gate_t* FORWARD(void);
 
 // adds gate input. input gate is pointer to another logic gate
 void logic_gate_add_input(logic_gate_t* g, logic_gate_t* input);
