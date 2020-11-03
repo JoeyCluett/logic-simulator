@@ -18,7 +18,7 @@ typedef enum logic_type {
     logic_gate_flipflop  = 6,
     logic_gate_none      = 7, // for pre-allocated gate types
     logic_gate_constant  = 8,
-    logic_gate_signal    = 9, // input types
+    logic_gate_signal    = 9, // input type
     logic_gate_forward   = 10, // used as an optimization technique
 } logic_type;
 

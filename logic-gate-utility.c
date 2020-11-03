@@ -115,13 +115,13 @@ static void logic_gate_fetch_cycle(void) {
                         logic_input_t* in = begin_ptr->gate.inputs;
                         while(in != NULL) {
 
-                            switch(*(in->output_ptr)) {
+                            switch(in->output_ptr->output_value) {
                                 case 0: begin_ptr->gate.n_low++;  break;
                                 case 1: begin_ptr->gate.n_high++; break;
                                 default:
                                     fprintf(stderr, 
                                             "logic_gate_fetch_cycle : gate has invalid output value '%d'\n", 
-                                            *(in->output_ptr));
+                                            in->output_ptr->output_value);
                                     exit(1); break;
                             }
 
@@ -263,17 +263,17 @@ void logic_gate_flipflop_set_data(logic_gate_t* g, logic_gate_t* data) {
 // every combination needs to account for the presence of forwarding gates
 void logic_gate_add_input(logic_gate_t* g, logic_gate_t* input) {
 
-    if(g->type == logic_gate_forward && input->type == logic_gate_forward) {
+    if(g->gate_type == logic_gate_forward && input->gate_type == logic_gate_forward) {
         // chaining forward gates is tricky
-        if(input->_forward.next_foward_gate == NULL) {
-            input->_forward.next_foward_gate = g;
+        if(input->_forward.next_forward_gate == NULL) {
+            input->_forward.next_forward_gate = g;
         }
         else {
-            fprintf(stderr, "logic_gate_add_input : cannot chain more than one forward gate to same destination forward gate")
+            fprintf(stderr, "logic_gate_add_input : cannot chain more than one forward gate to same destination forward gate");
             exit(1);
         }
     }
-    else if(g->type == logic_gate_forward && input->type != logic_gate_forward) {
+    else if(g->gate_type == logic_gate_forward && input->gate_type != logic_gate_forward) {
 
         // cannot forward more than one input gate
         if(g->_forward.input_gate != NULL) {
@@ -304,12 +304,11 @@ void logic_gate_add_input(logic_gate_t* g, logic_gate_t* input) {
         }
 
         // if there is a chained forward gate ahead, forward input to it
-        if(g->_forward.next_foward_gate != NULL) {
-            logic_gate_add_input(g->_forward.next_forward_gate, input)
+        if(g->_forward.next_forward_gate != NULL) {
+            logic_gate_add_input(g->_forward.next_forward_gate, input);
         }
-
     }
-    else if(g->type != logic_gate_forward && input->type == logic_gate_forward) {
+    else if(g->gate_type != logic_gate_forward && input->gate_type == logic_gate_forward) {
         
         if(input->_forward.input_gate == NULL) {
             // input hasnt been set yet. THATS OK!
@@ -336,7 +335,7 @@ void logic_gate_add_input(logic_gate_t* g, logic_gate_t* input) {
 
                 // allocate new logic_input_t struct
                 logic_input_t* new_input = logic_input_alloc();
-                new_input->output_ptr = &(input->output_value);
+                new_input->output_ptr = input;
 
                 // place new input at beginning of list of inputs
                 new_input->next = g->gate.inputs;

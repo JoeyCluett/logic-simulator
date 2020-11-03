@@ -21,7 +21,7 @@ long int logic_allocator_ngates(void) {
 }
 
 static void logic_init_gate_allocator(void) {
-    fprintf(stderr, "initializing gate allocator...\n");
+    fprintf(stderr, "    initializing gate allocator...\n");
 
     logic_gate_chunk_t* gchunk = (logic_gate_chunk_t*)malloc(sizeof(logic_gate_chunk_t));
 
@@ -45,7 +45,7 @@ static void logic_init_gate_allocator(void) {
 }
 
 static void logic_init_input_allocator(void) {
-    fprintf(stderr, "initializing input allocator...\n");
+    fprintf(stderr, "    initializing input allocator...\n");
 
     logic_input_chunk_t* ichunk = (logic_input_chunk_t*)malloc(sizeof(logic_input_chunk_t));
 
@@ -66,7 +66,7 @@ static void logic_init_input_allocator(void) {
 }
 
 static void logic_allocator_realloc_gates(void) {
-    fprintf(stderr, "pre-allocating additional gate chunk...\n");
+    fprintf(stderr, "    pre-allocating additional gate chunk...\n");
 
     logic_gate_chunk_t* newchunk = (logic_gate_chunk_t*)malloc(sizeof(logic_gate_chunk_t));
 
@@ -91,7 +91,7 @@ static void logic_allocator_realloc_gates(void) {
 }
 
 static void logic_allocator_realloc_inputs(void) {
-    fprintf(stderr, "pre-allocating additional input chunk...\n");
+    fprintf(stderr, "    pre-allocating additional input chunk...\n");
 
     logic_input_chunk_t* newchunk = (logic_input_chunk_t*)malloc(sizeof(logic_input_chunk_t));
 
