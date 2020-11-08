@@ -1,11 +1,11 @@
 #ifndef LOGIC_GATE_ALLOCATOR
 #define LOGIC_GATE_ALLOCATOR
 
+#include "logic-gates.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "logic-gates.h"
 
 // gates and inputs are allocated in chunks then simply doled 
 // out as needed, allocating additional chunks as needed
@@ -44,6 +44,9 @@ typedef struct logic_allocator_t {
 
 // perform logic gate allocator initialization
 void logic_init(void);
+
+// delete all allocated logic gates
+void logic_clean(void);
 
 // return the number of gates that have been allocated for simulation. 
 // this does not include allocated input signal types 'SIGNAL()' that are used by toplevel entities

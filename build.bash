@@ -7,6 +7,6 @@ gcc -c -o logic-gate-utility.o   logic-gate-utility.c   -O3 -march=native -I. -f
 gcc -c -o logic-gate-allocator.o logic-gate-allocator.c -O3 -march=native -I. -fPIC
 
 # build modules
-gcc -o main main.c logic-gates.o logic-gate-utility.o logic-gate-allocator.o -O3 -march=native -I.
+#gcc -o main main.c logic-gates.o logic-gate-utility.o logic-gate-allocator.o -O3 -march=native -I.
 
 

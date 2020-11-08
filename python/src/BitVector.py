@@ -2,13 +2,36 @@
 # utility functions for lists of Gate types
 #
 
+from Gate import *
+
+#
 # duck typing to the rescue
+#
 class BitVecValue:
     def __init__(self, value):
         self.value = value
 
     def get_output_value(self):
         return self.value
+
+    def set_output_value(self, value):
+        self.value = value
+
+#
+# simple wrapper over an array of SIGNAL types
+#
+class SignalVector:
+    def __init__(self, length):
+        self.signals = []
+
+        for i in range(0, length):
+            self.signals.append(SIGNAL())
+
+    def set_value(self, idx, value):
+        self.signals[idx].set_value(value)
+
+    def get_output_value(self, idx):
+        return self.signals[idx].get_output_value()
 
 def bitvector_equal(vec_a, vec_b):
     if len(vec_a) != len(vec_b):

@@ -122,6 +122,26 @@ void logic_init(void) {
     ZERO->output_value = 0;
 }
 
+void logic_clean(void) {
+
+    logic_gate_chunk_t* gate_ptr = global_logic_allocator.gate_first;
+
+    while(gate_ptr != NULL) {
+        free((void*)gate_ptr);
+        gate_ptr = gate_ptr->next;
+    }
+
+    logic_input_chunk_t* input_ptr = global_logic_allocator.input_first;
+
+    while(input_ptr != NULL) {
+        free((void*)input_ptr);
+        input_ptr = input_ptr->next;
+    }
+
+    // after everything is cleaned up, re-initialize the logic allocator
+    logic_init();
+}
+
 logic_gate_t* logic_gate_alloc(void) {
 
     if(global_logic_allocator.gate_last->n_allocated == LOGIC_GATE_ALLOCATOR_CHUNK_SIZE)

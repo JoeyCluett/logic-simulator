@@ -33,6 +33,8 @@ int bp_get_output_value(void* g);
 int bp_get_type(void* g);
 int bp_get_num_inputs(void* g);
 
+int bp_logic_alloc_clean(void);
+
 BOOST_PYTHON_MODULE(hdl)
 {
     using namespace boost::python;
@@ -49,10 +51,10 @@ BOOST_PYTHON_MODULE(hdl)
     def("logic_allocator_ngates", bp_logic_allocator_ngates);
     def("logic_gate_alloc",       bp_logic_gate_alloc, RET_VPTR);
 
-    def("logic_gate_add_input", bp_logic_gate_add_input);
+    def("logic_gate_add_input",          bp_logic_gate_add_input);
     def("logic_gate_flipflop_set_clock", bp_logic_gate_flipflop_set_clock);
     def("logic_gate_flipflop_set_data",  bp_logic_gate_flipflop_set_data);
-    def("logic_gate_simulate",  bp_logic_gate_simulate);
+    def("logic_gate_simulate",           bp_logic_gate_simulate);
 
     def("logic_gate_get_constant_zero", bp_get_constant_zero, RET_VPTR);
     def("logic_gate_get_constant_one",  bp_get_constant_one,  RET_VPTR);
@@ -60,6 +62,8 @@ BOOST_PYTHON_MODULE(hdl)
     def("logic_gate_get_output_value", bp_get_output_value);
     def("logic_gate_get_type",         bp_get_type);
     def("logic_gate_get_num_inputs",   bp_get_num_inputs);
+
+    def("logic_alloc_clean", bp_logic_alloc_clean);
 }
 
 int bp_get_num_inputs(void* g) {

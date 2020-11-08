@@ -43,6 +43,20 @@ class RegularGate(AllGate):
             not_gate.add_input(g)
             hdl.logic_gate_add_input(self.ptr, not_gate.ptr)
 
+# kind of a weird gate
+class FORWARD:
+    def __init__(self):
+        self.ptr = hdl.logic_gate_new(GateType.logic_gate_forward)
+
+    def add_input(self, gate):
+        hdl.logic_gate_add_input(self.ptr, gate.ptr)
+
+    def add_inv_input(self, gate):
+        not_gate = NOR()
+        not_gate.add_input(gate)
+        hdl.logic_gate_add_input(self.ptr, not_gate.ptr)
+
+
 # ===============================================
 # all lowest level gate types
 # ===============================================
@@ -64,7 +78,7 @@ class SIGNAL(AllGate):
         AllGate.__init__(self)
         self.ptr = hdl.logic_gate_new(GateType.logic_gate_signal)
 
-    def set_value(self, value):
+    def set_output_value(self, value):
         hdl.logic_gate_signal_set(self.ptr, value)
 
 class ZERO(AllGate):
@@ -78,25 +92,37 @@ class ONE(AllGate):
         self.ptr = hdl.logic_gate_get_constant_one()
 
 class AND(RegularGate):
-    def __init__(self):
+    def __init__(self, *args):
         RegularGate.__init__(self, GateType.logic_gate_and)
+        for g in args:
+            self.add_input(g)
 
 class NAND(RegularGate):
-    def __init__(self):
+    def __init__(self, *args):
         RegularGate.__init__(self, GateType.logic_gate_nand)
+        for g in args:
+            self.add_input(g)
 
 class OR(RegularGate):
-    def __init__(self):
+    def __init__(self, *args):
         RegularGate.__init__(self, GateType.logic_gate_or)
+        for g in args:
+            self.add_input(g)
 
 class NOR(RegularGate):
-    def __init__(self):
+    def __init__(self, *args):
         RegularGate.__init__(self, GateType.logic_gate_nor)
+        for g in args:
+            self.add_input(g)
 
 class XOR(RegularGate):
-    def __init__(self):
+    def __init__(self, *args):
         RegularGate.__init__(self, GateType.logic_gate_xor)
+        for g in args:
+            self.add_input(g)
 
 class XNOR(RegularGate):
-    def __init__(self):
+    def __init__(self, *args):
         RegularGate.__init__(self, GateType.logic_gate_xnor)
+        for g in args:
+            self.add_input(g)

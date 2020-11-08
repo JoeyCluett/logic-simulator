@@ -1,13 +1,13 @@
 #ifndef LOGIC_GATE_UTILITY
 #define LOGIC_GATE_UTILITY
 
+#include "logic-gates.h"
+#include "logic-gate-allocator.h"
+
 // needs to avoid name-mangling
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "logic-gates.h"
-#include "logic-gate-allocator.h"
 
 // return initialized gates. these work as wrappers over the 
 // regular gate allocation/initialization functions. these 

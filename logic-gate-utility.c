@@ -137,6 +137,7 @@ static void logic_gate_fetch_cycle(void) {
                     break;
 
                 case logic_gate_none:
+                case logic_gate_forward:
                     break;
 
                 default:
@@ -178,6 +179,7 @@ static int logic_gate_update_cycle(void) {
                     logic_gate_update_flipflop(begin_ptr); 
                     break;
                 case logic_gate_none:
+                case logic_gate_forward:
                     break;
                 default:
                     fprintf(stderr, "logic_gate_update_cycle : unknown internal error -> invalid gate type in main simulation\n");
@@ -403,8 +405,8 @@ logic_gate_t* FLIPFLOP(void) {
 }
 
 logic_gate_t* FORWARD(void) {
-    logic_gate_t* gptr = logic_gate_new(logic_gate_forward);
-    return gptr;
+    logic_gate_t* gptr = logic_gate_alloc();
+    return logic_gate_init(gptr, logic_gate_forward);
 }
 
 #ifdef __cplusplus
