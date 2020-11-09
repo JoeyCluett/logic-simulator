@@ -95,9 +95,9 @@ class BCD_Digit:
 
     class DigitAdjust:
         def __init__(self):
-            self.selector   = Selector()
-            self.plus3      = Plus3()
-            self.comparedig = DigitCompare()
+            self.selector   = BCD_Digit.Selector()
+            self.plus3      = BCD_Digit.Plus3()
+            self.comparedig = BCD_Digit.DigitCompare()
 
             self.selector.set_input_vec_1(self.plus3.get_output_vector())
             self.selector.set_select(self.comparedig.get_output())
