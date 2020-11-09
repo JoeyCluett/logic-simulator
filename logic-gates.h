@@ -9,6 +9,7 @@ extern "C" {
 #endif
 
 typedef enum logic_type {
+
     logic_gate_and  = 0,
     logic_gate_nand = 1,
     logic_gate_or   = 2,
@@ -20,6 +21,9 @@ typedef enum logic_type {
     logic_gate_constant  = 8,
     logic_gate_signal    = 9,  // input type
     logic_gate_forward   = 10, // used as an optimization technique
+    logic_gate_buffer = 11,
+    logic_gate_bus    = 12,
+
 } logic_type;
 
 // forward declare input type
@@ -34,6 +38,7 @@ typedef struct logic_gate_t {
 
         struct {
             
+            // flip flops are allowed only one clock and one data input
             struct logic_gate_t* clk_input;
             struct logic_gate_t* data_input;
 
@@ -54,7 +59,7 @@ typedef struct logic_gate_t {
 
         } gate;
 
-        // _forward gate is a lil odd. the 'input list' is actually all of the gates directly upstream from this gate.
+        // _forward gate is a lil odd. the 'input list' is actually all of the gates directly downstream from this gate.
         // _forward will buffer them until its own input is evaluated at which point the input gate is 'forwarded' to 
         // the buffered gate references and those references are released
         struct {
@@ -72,7 +77,6 @@ typedef struct logic_gate_t {
 // user will never explicitly initialize one of these
 typedef struct logic_input_t {
     struct logic_input_t* next; // creates linked list
-    //struct logic_gate_t* gate_ptr;
     logic_gate_t* output_ptr;
 } logic_input_t;
 

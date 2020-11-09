@@ -14,6 +14,7 @@ class GateType:
     logic_gate_signal   = 9
     logic_gate_forward  = 10
 
+
 class AllGate:
     def __init__(self):
         self.ptr = None
