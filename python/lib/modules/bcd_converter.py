@@ -1,5 +1,7 @@
 from Gate import *
 
+from multiplexer import *
+
 class BCD_Digit:
 
     class DigitCompare:
@@ -109,6 +111,56 @@ class BCD_Digit:
 
         def get_output_vector(self):
             return self.selector.get_output_vector()
+
+    def __init__(self):
+        self.adj = BCD_Digit.DigitAdjust()
+
+        self.ffs = [ FLIPFLOP(), FLIPFLOP(), FLIPFLOP(), FLIPFLOP() ]
+        self.mux = [
+            Multiplexer(select_bits=1),
+            Multiplexer(select_bits=1),
+            Multiplexer(select_bits=1),
+            Multiplexer(select_bits=1)
+        ]
+
+        self.shift_in = FORWARD()
+
+        adj_out = self.adj.get_output_vector()
+
+        self.mux[0].set_input_vector([ self.shift_in, ZERO() ])
+        self.mux[1].set_input_vector([ adj_out[0],    ZERO() ])
+        self.mux[2].set_input_vector([ adj_out[1],    ZERO() ])
+        self.mux[3].set_input_vector([ adj_out[2],    ZERO() ])
+
+        for i in range(0, 4):
+            self.ffs[i].set_data(self.mux[i].get_output())
+            self.ffs[i].set_
+
+        input_vector = [
+            self.ffs[0],
+            self.ffs[1],
+            self.ffs[2],
+            self.ffs[3]
+        ]
+
+        self.adj.set_input_vector(input_vector)
+
+    def set_nShift_Reset(self, nshift_reset):
+        for i in range(0, 4):
+            self.mux[i].set_select_vector([ nshift_reset ])
+
+    def set_clock(self, clk):
+        for i in range(0, 4):
+            self.ffs[i].set_clock(clk)
+
+    def set_shift_in(self, shift_in):
+        self.shift_in.add_input(shift_in)
+
+    def get_shift_out(self):
+        return self.adj.get_output_vector()[3]
+
+    def get_output_vector(self):
+        return self.ffs
 
 class BCD_Converter:
 

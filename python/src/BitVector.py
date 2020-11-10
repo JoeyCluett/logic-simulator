@@ -4,6 +4,18 @@
 
 from Gate import *
 
+def set_vec_to_value(vec, value):
+    for i in range(len(vec)):
+        vec[i].set_output_value( (value >> i) & 0x01 )
+
+def new_signal_vec(veclen):
+    v = []
+
+    for i in range(veclen):
+        v.append(SIGNAL())
+
+    return v
+
 #
 # duck typing to the rescue
 #
