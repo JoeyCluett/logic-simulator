@@ -1,6 +1,7 @@
 from Gate import *
 
 from multiplexer import *
+from shiftregister import *
 
 class BCD_Digit:
 
@@ -134,7 +135,6 @@ class BCD_Digit:
 
         for i in range(0, 4):
             self.ffs[i].set_data(self.mux[i].get_output())
-            self.ffs[i].set_
 
         input_vector = [
             self.ffs[0],
@@ -162,25 +162,40 @@ class BCD_Digit:
     def get_output_vector(self):
         return self.ffs
 
+    def __str__(self):
+        return '{0}{1}{2}{3}'.format(
+            self.ffs[3].get_output_value(),
+            self.ffs[2].get_output_value(),
+            self.ffs[1].get_output_value(),
+            self.ffs[0].get_output_value())
+
+    def to_dec(self):
+        t = 0
+        for i in range(0, 4):
+            t |= ( ( self.ffs[i].get_output_value() & 0x01 ) << i)
+        return t
+
 class BCD_Converter:
 
-    def __init__(self):
-        self.ffs = [
-            FLIPFLOP(),
-            FLIPFLOP(),
-            FLIPFLOP(),
-            FLIPFLOP()
-        ]
+    def __init__(self, bitwidth):
 
-        self.ffs[1].set_data(self.ffs[0])
-        self.ffs[2].set_data(self.ffs[1])
-        self.ffs[3].set_data(self.ffs[2])
+        ndigits = ceil(bitwdth / 3.0)
 
-    def get_shift_out(self):
-        return self.ffs[3]
+        self.bitwidth = bitwidth
+        self.input_register = piso_shiftregister(bitwidth)
+        self.digits = []
 
-    def set_shift_in(self, g):
-        self.ffs[0].set_data(g)
+        for i in range(0, ndigits):
+            self.digits.append(BCD_Digit())
+
+        self.digits[0].set_shift_in(self.input_register.get_shift_out())
+        for k in range(1, ndigits):
+            self.digits[k].set_shift_in(self.digits[k-1].get_shift_out())
+
+    def get_decimal_result(self):
+        dlen = len(self.digits)
+        for i in range(0, dlen):
+            pass
 
 
 
