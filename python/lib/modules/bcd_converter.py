@@ -181,21 +181,35 @@ class BCD_Converter:
 
         ndigits = ceil(bitwdth / 3.0)
 
-        self.bitwidth = bitwidth
+        self.bitwidth       = bitwidth
         self.input_register = piso_shiftregister(bitwidth)
-        self.digits = []
+        self.digits         = []
 
         for i in range(0, ndigits):
             self.digits.append(BCD_Digit())
 
+        # link digits together
         self.digits[0].set_shift_in(self.input_register.get_shift_out())
         for k in range(1, ndigits):
             self.digits[k].set_shift_in(self.digits[k-1].get_shift_out())
 
+    def set_clock(self, clk):
+        for el in self.digits:
+            el.set_clock(clk)
+
+        self.input_register.set_clock(clk)
+
+    def set_nShift_load(self, sig):
+        for el in self.digits:
+            el.set_nShift_Reset(sig)
+
+        self.input_register.
+
     def get_decimal_result(self):
-        dlen = len(self.digits)
-        for i in range(0, dlen):
-            pass
+        n = ''
+        for el in self.digits:
+            n += str(el.to_dec())
+        return n[::-1]
 
 
 
