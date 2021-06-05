@@ -137,3 +137,6 @@ void  bp_logic_gate_signal_set(void* g, int value) {
     logic_gate_signal_set((logic_gate_t*)g, value);
 }
 
+int bp_logic_alloc_clean(void) {
+    logic_clean();
+}

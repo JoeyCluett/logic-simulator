@@ -6,6 +6,10 @@
 logic_gate_t* ONE;
 logic_gate_t* ZERO;
 
+void logic_verify_environment(void) {
+    
+}
+
 void logic_gate_signal_set(logic_gate_t* g, int value) {
     if(g->gate_type == logic_gate_signal) {
         g->output_value = value;
@@ -54,7 +58,6 @@ logic_gate_t* logic_gate_init(logic_gate_t* g, logic_type type) {
         case logic_gate_forward:
             g->_forward.buffer_list = NULL; // NULL means list is empty
             g->_forward.input_gate  = NULL; // NULL means no input gate
-            g->_forward.next_forward_gate = NULL; // NULL means no chained _forward type
             break;
         default:
             fprintf(stderr, "logic_gate_init : invalid logic gate type '%d'", (int)type);

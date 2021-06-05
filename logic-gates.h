@@ -21,10 +21,16 @@ typedef enum logic_type {
     logic_gate_constant  = 8,
     logic_gate_signal    = 9,  // input type
     logic_gate_forward   = 10, // used as an optimization technique
-    logic_gate_buffer = 11,
-    logic_gate_bus    = 12,
+    logic_gate_buffer = 11, // tri-state
+    logic_gate_bus    = 12, // passive wire type
 
 } logic_type;
+
+// can go in header because they are const
+const int OUTPUT_ZERO = 0;
+const int OUTPUT_ONE  = 1;
+const int OUTPUT_HI_Z = 2;
+const int OUTPUT_UND  = 3;
 
 // forward declare input type
 struct logic_input_t;
@@ -35,6 +41,12 @@ typedef struct logic_gate_t {
     logic_type gate_type;
 
     union {
+
+        struct {
+            struct logic_input_t* inputs;
+            int fetched_value;
+            int n_inputs;
+        } gate;
 
         struct {
             
@@ -48,27 +60,29 @@ typedef struct logic_gate_t {
 
         } flipflop;
 
-        struct {
-
-            struct logic_input_t* inputs;
-
-            int fetched_value;
-            int n_inputs;
-            int n_high;
-            int n_low;
-
-        } gate;
-
-        // _forward gate is a lil odd. the 'input list' is actually all of the gates directly downstream from this gate.
-        // _forward will buffer them until its own input is evaluated at which point the input gate is 'forwarded' to 
-        // the buffered gate references and those references are released
+        // forward types need to be fully evaluated every simulation cycle. this means the forward
+        // chain started by _forward.input_gate must be followed until a logic_type is encountered
         struct {
 
             struct logic_input_t* buffer_list;
             struct logic_gate_t* input_gate;
-            struct logic_gate_t* next_forward_gate; // link multiple _forward gates if needed
-
+            int fetched_value;
         } _forward;
+
+        struct {
+
+            struct logic_gate_t* data_input;
+            struct logic_gate_t* select_input;
+
+            int fetched_data;
+            int fetched_select;
+
+        } tristate_buffer;
+
+        struct {
+            struct logic_input_t* input_list;
+            int fetched_data;
+        } wire;
 
     };
 
@@ -92,10 +106,14 @@ logic_input_t* logic_input_new(void);
 // set the output of gate
 void logic_gate_signal_set(logic_gate_t* g, int value);
 
+// verify various aspects of all allocated gates
+void logic_verify_environment(void);
+
 // a few globals, initialized elsewhere
 extern logic_gate_t* ONE;
 extern logic_gate_t* ZERO;
-
+extern logic_gate_t* HI_Z;
+extern logic_gate_t* UND;
 
 #ifdef __cplusplus
 }
