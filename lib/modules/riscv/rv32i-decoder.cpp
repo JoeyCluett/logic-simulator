@@ -39,7 +39,9 @@ RISCV_Decoder_t::RISCV_Decoder_t(void)
 
         funct_7_cmp {
             7, 7
-        }
+        },
+
+        immediate_bus(VectorInit_(32, WIRE))
 
     {
 
@@ -220,7 +222,7 @@ void RISCV_Decoder_t::Test(void) {
     auto ts = []() -> size_t {
         timeval tv;
         gettimeofday(&tv, NULL);
-        return (tv.tv_sec * 1000000UL + tv.tv_usec) / 1000UL;
+        return (tv.tv_sec * 1000000UL + tv.tv_usec) / 1000UL; // return milliseconds
     };
 
     //std::cout << "0         1         2         3\n";

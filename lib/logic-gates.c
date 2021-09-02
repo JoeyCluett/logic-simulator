@@ -64,7 +64,6 @@ logic_gate_t* logic_gate_init(logic_gate_t* g, logic_type type) {
         case logic_gate_signal:
             break; // do nothing
         case logic_gate_forward:
-            //g->_forward.buffer_list = NULL; // NULL means list is empty
             g->_forward.input_gate  = NULL; // NULL means no input gate
             break;
         case logic_gate_buffer:
@@ -73,6 +72,7 @@ logic_gate_t* logic_gate_init(logic_gate_t* g, logic_type type) {
             break;
         case logic_gate_wire:
             g->wire.input_list = NULL;
+            g->wire.fetched_data = 0;
             break;
         default:
             exit_hook(stderr,

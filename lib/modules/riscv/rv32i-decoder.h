@@ -57,6 +57,7 @@ struct RISCV_Decoder_t {
         BitwiseEqualDetect_t bed_0100000;
     } funct_7_cmp;
 
+    std::vector<Gate_t> immediate_bus;
 
     RISCV_Decoder_t(void);
 

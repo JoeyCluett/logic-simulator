@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,12 +34,13 @@ void logic_allocator_debug_info(void) {
     unsigned long n_real_gates = 0UL;
     unsigned long n_forward_gates = 0UL;
     unsigned long n_allocd_inputs = 0UL;
-    int gate_chunks_allocd  = 0;
+    int gate_chunks_allocd_real  = 0;
+    int gate_chunks_allocd_fwd   = 0;
     int input_chunks_allocd = 0;
 
     logic_gate_chunk_t* gate_chunk_ptr = global_logic_allocator.gate_first;
     while(gate_chunk_ptr != NULL) {
-        gate_chunks_allocd++;
+        gate_chunks_allocd_real++;
 
         logic_gate_t* gate_iter = gate_chunk_ptr->gate_chunk;
         logic_gate_t* gate_iter_end = gate_chunk_ptr->gate_chunk + gate_chunk_ptr->n_allocated;
@@ -72,6 +74,15 @@ void logic_allocator_debug_info(void) {
         gate_chunk_ptr = gate_chunk_ptr->next;
     }
 
+    //assert(n_forward_gates == 0ul);
+
+    gate_chunk_ptr = global_logic_allocator.forward_first;
+    while(gate_chunk_ptr != NULL) {
+        gate_chunks_allocd_fwd++;
+        n_forward_gates += gate_chunk_ptr->n_allocated;
+        gate_chunk_ptr = gate_chunk_ptr->next;
+    }
+
     logic_input_chunk_t* input_chunk_ptr = global_logic_allocator.input_first;
     while(input_chunk_ptr != NULL) {
         input_chunks_allocd++;
@@ -80,12 +91,14 @@ void logic_allocator_debug_info(void) {
     }
 
     printf("\n  allocator debug info:\n");
-    printf("      allocated gates:       %ld\n", n_allocd_gates);
+    printf("      allocated gates:       %ld\n", n_allocd_gates+n_forward_gates);
     printf("          real:              %lu\n", n_real_gates);
     printf("          forward:           %lu\n", n_forward_gates);
     printf("          constants:         2\n");
     printf("      allocated inputs:      %lu\n", n_allocd_inputs);
-    printf("      allocated gate chunks: %d\n", gate_chunks_allocd);
+    printf("      allocated gate chunks: %d\n", gate_chunks_allocd_real + gate_chunks_allocd_fwd);
+    printf("          real:              %d\n", gate_chunks_allocd_real);
+    printf("          forward:           %d\n", gate_chunks_allocd_fwd);
     printf("      allocated input chunk: %d\n", input_chunks_allocd);
     printf("      gate chunk size:       %lu gates (%lu bytes)\n", 
             (unsigned long)LOGIC_GATE_ALLOCATOR_CHUNK_SIZE, 
@@ -164,7 +177,7 @@ static void logic_init_input_allocator(void) {
 
 
 static void logic_allocator_realloc_gates(void) {
-    fprintf(stderr, "    pre-allocating additional gate chunk...\n");
+    //fprintf(stderr, "    pre-allocating additional gate chunk...\n");
 
     logic_gate_chunk_t* newchunk = (logic_gate_chunk_t*)malloc(sizeof(logic_gate_chunk_t));
 
@@ -189,7 +202,7 @@ static void logic_allocator_realloc_gates(void) {
 }
 
 static void logic_allocator_realloc_forward_gates(void) {
-    fprintf(stderr, "    pre-allocating additional forward gate chunk...\n");
+    //fprintf(stderr, "    pre-allocating additional forward gate chunk...\n");
 
     logic_gate_chunk_t* newchunk = (logic_gate_chunk_t*)malloc(sizeof(logic_gate_chunk_t));
 
@@ -298,7 +311,9 @@ logic_gate_t* logic_gate_alloc_forward(void) {
     if(global_logic_allocator.forward_last->n_allocated == LOGIC_GATE_ALLOCATOR_CHUNK_SIZE)
         logic_allocator_realloc_forward_gates();
 
-    logic_gate_chunk_t* chunk_ptr = global_logic_allocator.gate_last;
+    logic_gate_chunk_t* chunk_ptr = global_logic_allocator.forward_last;
+    //logic_gate_chunk_t* chunk_ptr = global_logic_allocator.gate_last;
+
     logic_gate_t* gate_ptr = chunk_ptr->gate_chunk + chunk_ptr->n_allocated;
 
     chunk_ptr->n_allocated++;

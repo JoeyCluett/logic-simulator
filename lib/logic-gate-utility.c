@@ -89,8 +89,16 @@ void logic_gate_eval_forwards(void) {
                     break;
 
                 case logic_gate_buffer  ://  = 11, // tri-state buffer
+                    {
+
+                    }
+                    break; 
+
                 case logic_gate_wire    ://  = 12, // passive wire type
-                    //return g->output_value;
+                    {
+
+                    }
+                    break;
 
                 default:
                     exit_hook(stderr, 
@@ -390,12 +398,17 @@ static int logic_gate_update_cycle(void) {
 
                 case logic_gate_buffer: // tri-state
                     if(begin_ptr->output_value != begin_ptr->tristate_buffer.fetched_data) {
-                        
+                        begin_ptr->output_value = begin_ptr->tristate_buffer.fetched_data;
                         changes++;
                     }
                     break;
 
                 case logic_gate_wire: // passive wire type
+                    if(begin_ptr->output_value != begin_ptr->wire.fetched_data) {
+                        begin_ptr->output_value = begin_ptr->wire.fetched_data;
+                        changes++;
+                    }
+                    break;
 
                 default:
                     exit_hook(stderr, 
