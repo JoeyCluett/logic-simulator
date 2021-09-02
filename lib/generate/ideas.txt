@@ -1,0 +1,88 @@
+
+# ===============================================
+# auto-generated files will not be nearly this pretty
+
+
+:MODULE full_adder;
+
+:i A B Cin; # inputs
+:o Sum Cout; # outputs
+
+# gate type is case-insensitive
+:and a0 a1;
+:Xor x0 x1;
+:oR o0;
+
+# describe relationships between gates/inputs
+x0 A B;
+a0 A B;
+x1 x0 Cin;
+a1 x0 Cin;
+o0 a0 a1;
+
+# describe outputs
+< Sum x1;
+< Cout o0;
+
+
+
+
+
+:MODULE using_wire;
+
+:i A B C;          # data inputs
+:i Asel Bsel Csel; # select inputs
+:o Output;
+
+:buf Abuf Bbuf Cbuf; # tristate buffer type
+:w output_wire;
+
+Abuf d:A s:Asel; # tristate buffer definitions must explicitly specify data (d) and select (s) inputs
+Bbuf d:B s:Bsel;
+Cbuf d:C s:Csel;
+
+output_wire Abuf Bbuf Cbuf;
+< Output output_wire;
+
+
+
+
+
+:MODULE using_vector
+
+:iv Addr 2;    # "input vector", this one is 2 bits wide
+:ov DataOut 4; # "output vector", this one is 4 bits wide
+:i Enable;     # enable input for buffers
+
+:and a0 a1 a2 a3;
+:nor not0 not1;     # there is no such thing as a primitive NOT gate, they are all NOR gates
+
+not0 Addr[0];
+not1 Addr[1];
+
+a0 Enable not0 not1;
+a1 Enable Addr[0] not1;
+a2 Enable not0 Addr[1];
+a3 Enable Addr[0] Addr[1];
+
+# literal '1' = 1
+# literal '0' = 0
+
+< DataOut a0 a1 a2 a3; # shortcut (<<) to specify multiple members of an output vector type
+
+# could also specify each individually:
+< DataOut[0] a0;
+< DataOut[1] a1;
+< DataOut[2] a2;
+< DataOut[3] a3;
+
+
+
+
+:MODULE using_flipflop
+
+:i a b;
+
+:ff flipflop_0 flipflop_1;
+
+flipflop_0 d:a c:b; # explicitly specify 

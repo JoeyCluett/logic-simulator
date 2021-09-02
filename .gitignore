@@ -3,5 +3,10 @@ main
 **/*.so
 **/*.o
 **/*.pyc
+**/*.exe
+obj/*
+txt/*
 
+.vscode/*
+Makefile
 
