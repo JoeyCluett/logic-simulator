@@ -76,6 +76,9 @@ void VectorConnect_(std::vector<Gate_t> dst, std::vector<Gate_t> src) {
         if(dst.at(i).internal_gate->gate_type == logic_gate_flipflop) {
             dst.at(i).ff_set_data(src.at(i));
         }
+        else if(dst.at(i).internal_gate->gate_type == logic_gate_buffer) {
+            dst.at(i).tristate_set_data(src.at(i));
+        }
         else {
             dst.at(i).add_input(src.at(i));
         }

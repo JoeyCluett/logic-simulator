@@ -312,8 +312,6 @@ logic_gate_t* logic_gate_alloc_forward(void) {
         logic_allocator_realloc_forward_gates();
 
     logic_gate_chunk_t* chunk_ptr = global_logic_allocator.forward_last;
-    //logic_gate_chunk_t* chunk_ptr = global_logic_allocator.gate_last;
-
     logic_gate_t* gate_ptr = chunk_ptr->gate_chunk + chunk_ptr->n_allocated;
 
     chunk_ptr->n_allocated++;

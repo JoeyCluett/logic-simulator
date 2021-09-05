@@ -3,6 +3,7 @@
 #include <lib/logic.h>
 #include <lib/cpp-api/gate-wrapper.h>
 #include <lib/modules/riscv/rv32i-instruction-register.h>
+#include <lib/modules/riscv/rv32i-imm-gen.h>
 #include <lib/modules/BitwiseEqualDetect.h>
 
 struct RISCV_Decoder_t {
@@ -57,7 +58,9 @@ struct RISCV_Decoder_t {
         BitwiseEqualDetect_t bed_0100000;
     } funct_7_cmp;
 
-    std::vector<Gate_t> immediate_bus;
+
+    RISCV_Immediates_t immediates;
+
 
     RISCV_Decoder_t(void);
 
@@ -66,6 +69,8 @@ struct RISCV_Decoder_t {
     void set_clk(Gate_t clk);
 
     static void Test(void);
+
+    void Verify(void);
 
 };
 

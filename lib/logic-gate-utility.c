@@ -90,13 +90,22 @@ void logic_gate_eval_forwards(void) {
 
                 case logic_gate_buffer  ://  = 11, // tri-state buffer
                     {
+                        logic_gate_t* gptr = logic_gate_follow(gate_ptr->tristate_buffer.data_input);
+                        gate_ptr->tristate_buffer.data_input = gptr;
 
+                        gptr = logic_gate_follow(gate_ptr->tristate_buffer.select_input);
+                        gate_ptr->tristate_buffer.select_input = gptr;
                     }
                     break; 
 
                 case logic_gate_wire    ://  = 12, // passive wire type
                     {
-
+                        logic_input_t* inp = gate_ptr->wire.input_list;
+                        while(inp != NULL) {
+                            logic_gate_t* tmp_gate_ptr = logic_gate_follow(inp->output_ptr);
+                            inp->output_ptr = tmp_gate_ptr;
+                            inp = inp->next;
+                        }
                     }
                     break;
 
@@ -323,26 +332,36 @@ static void logic_gate_fetch_cycle(void) {
                         logic_input_t* inp_ptr = begin_ptr->wire.input_list;
                         while(inp_ptr != NULL) {
                             
-                            const int val = logic_gate_follow(inp_ptr->output_ptr)->output_value;
+                            logic_gate_t* inp_gate = logic_gate_follow(inp_ptr->output_ptr);
 
-                            switch(begin_ptr->wire.fetched_data) {
+                            switch(inp_gate->output_value) {
                                 case OUTPUT_ZERO:
+                                    if(begin_ptr->wire.fetched_data == OUTPUT_HI_Z) {
+                                        begin_ptr->wire.fetched_data = OUTPUT_ZERO;
+                                    }
+                                    else {
+                                        inp_ptr = NULL;
+                                    }
+                                    break;
                                 case OUTPUT_ONE:
-                                    if(val != OUTPUT_HI_Z) {
-                                        begin_ptr->wire.fetched_data = OUTPUT_UND;
+                                    if(begin_ptr->wire.fetched_data == OUTPUT_HI_Z) {
+                                        begin_ptr->wire.fetched_data = OUTPUT_ONE;
+                                    }
+                                    else {
                                         inp_ptr = NULL;
                                     }
                                     break;
                                 case OUTPUT_HI_Z:
-                                    begin_ptr->wire.fetched_data = val;
                                     break;
                                 case OUTPUT_UND:
-                                    inp_ptr = NULL;
+                                    begin_ptr->wire.fetched_data = OUTPUT_UND;
                                     break;
                             }
 
-                            inp_ptr = inp_ptr->next;
+                            if(inp_ptr)
+                                inp_ptr = inp_ptr->next;
                         }
+
                     }
                     break;
 
@@ -397,9 +416,17 @@ static int logic_gate_update_cycle(void) {
                     break;
 
                 case logic_gate_buffer: // tri-state
-                    if(begin_ptr->output_value != begin_ptr->tristate_buffer.fetched_data) {
-                        begin_ptr->output_value = begin_ptr->tristate_buffer.fetched_data;
-                        changes++;
+                    if(begin_ptr->tristate_buffer.fetched_select == OUTPUT_ZERO) {
+                        if(begin_ptr->output_value != OUTPUT_HI_Z) {
+                            begin_ptr->output_value = OUTPUT_HI_Z;
+                            changes++;
+                        }
+                    }
+                    else {
+                        if(begin_ptr->output_value != begin_ptr->tristate_buffer.fetched_data) {
+                            begin_ptr->output_value = begin_ptr->tristate_buffer.fetched_data;
+                            changes++;
+                        }
                     }
                     break;
 

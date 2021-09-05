@@ -39,9 +39,7 @@ RISCV_Decoder_t::RISCV_Decoder_t(void)
 
         funct_7_cmp {
             7, 7
-        },
-
-        immediate_bus(VectorInit_(32, WIRE))
+        }
 
     {
 
@@ -108,7 +106,7 @@ RISCV_Decoder_t::RISCV_Decoder_t(void)
         Gate_t op_bed_1100011 = opcode_cmp.bed_1100011.get_output();
         Gate_t op_bed_0000011 = opcode_cmp.bed_0000011.get_output();
         Gate_t op_bed_0100011 = opcode_cmp.bed_0100011.get_output();
-        Gate_t op_bed_0010011 = opcode_cmp.bed_0010011.get_output();
+        Gate_t op_bed_0010011 = opcode_cmp.bed_0010011.get_output(); // ADDI
         Gate_t op_bed_0110011 = opcode_cmp.bed_0110011.get_output();
         Gate_t op_bed_0001111 = opcode_cmp.bed_0001111.get_output();
 
@@ -178,8 +176,22 @@ RISCV_Decoder_t::RISCV_Decoder_t(void)
         this->inst.EBREAK.add_input( this->bed_ebreak ); this->instruction_bit_value.at(39).add_input( this->inst.EBREAK );
     }
     
-
-
+    this->immediates.set_input_bus(this->ir.register_);
+    this->immediates.set_select(RV32I_Imm::_11_0, 
+            Or_(this->inst.JALR, this->inst.LB, this->inst.LH, this->inst.LW, this->inst.LBU, this->inst.LHU, 
+                this->inst.ADDI, this->inst.SLTI, this->inst.SLTIU, this->inst.XORI, this->inst.ORI, this->inst.ANDI ));
+    this->immediates.set_select(RV32I_Imm::_11_5,
+            Or_(this->inst.SB, this->inst.SH, this->inst.SW));
+    this->immediates.set_select(RV32I_Imm::_12_10_5,
+            Or_(this->inst.BEQ, this->inst.BNE, this->inst.BLT, this->inst.BGE, this->inst.BLTU, this->inst.BGEU));
+    this->immediates.set_select(RV32I_Imm::_4_0,
+            Or_(this->inst.SB, this->inst.SH, this->inst.SW));
+    this->immediates.set_select(RV32I_Imm::_4_1_11,
+            Or_(this->inst.BEQ, this->inst.BNE, this->inst.BLT, this->inst.BGE, this->inst.BLTU, this->inst.BGEU));
+    this->immediates.set_select(RV32I_Imm::_31_12,
+            Or_(this->inst.LUI, this->inst.AUIPC));
+    this->immediates.set_select(RV32I_Imm::_20_10_1_11_19_12,
+            Or_(this->inst.JAL));
 }
 
 void RISCV_Decoder_t::set_data_in(std::vector<Gate_t> input) {
@@ -215,6 +227,7 @@ void RISCV_Decoder_t::Test(void) {
         std::string s;
         for(size_t i = 0UL; i < width; i++) {
             s.push_back("01"[rand() & 0x01]);
+            //s.push_back('1');
         }
         return s;
     };
@@ -225,14 +238,13 @@ void RISCV_Decoder_t::Test(void) {
         return (tv.tv_sec * 1000000UL + tv.tv_usec) / 1000UL; // return milliseconds
     };
 
-    //std::cout << "0         1         2         3\n";
-    //std::cout << "0123456789012345678901234567890123456789\n";
-
     srand(time(NULL));
 
     logic_init();
 
     RISCV_Decoder_t decoder_0;
+
+    decoder_0.Verify();
 
     SignalVector_t sig(32);
     Signal_t       clk;
@@ -248,7 +260,7 @@ void RISCV_Decoder_t::Test(void) {
 
     size_t start_time = ts();
 
-    const size_t NUM_TEST_RUNS = 1000ul;
+    const size_t NUM_TEST_RUNS = 1ul;
 
     for(size_t i = 0UL; i < NUM_TEST_RUNS; i++) {
 
@@ -325,4 +337,11 @@ void RISCV_Decoder_t::Test(void) {
 
     logic_allocator_debug_info();
     logic_clean();
+}
+
+void RISCV_Decoder_t::Verify(void) {
+    this->immediates.Verify();
+
+
+
 }

@@ -81,6 +81,24 @@ struct Gate_t {
 
 };
 
+#define GATE_TEST(gate_ref) \
+    if(gate_ref.has_inputs() == 0) { \
+        throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + \
+        " : gate reference '" + #gate_ref + "' is missing input(s)"); \
+    }
+
+#define GATE_VEC_TEST(gate_vector_ref) \
+    { \
+        size_t vector_index__ = 0ul; \
+        for(auto& g : gate_vector_ref) { \
+            if(g.has_inputs() == 0) { \
+                throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + \
+                " : gate reference '" + #gate_vector_ref + "[" + std::to_string(vector_index__) + "]' is missing input(s)"); \
+            } \
+            vector_index__++; \
+        } \
+    }
+
 Gate_t operator&(Gate_t lhs, Gate_t rhs);
 Gate_t operator|(Gate_t lhs, Gate_t rhs);
 Gate_t operator^(Gate_t lhs, Gate_t rhs);
