@@ -12,6 +12,7 @@ extern "C" {
 // out as needed, allocating additional chunks as needed
 // - allocator is very naive
 //      - assumes gates are never free'd individually
+//      - logic_clean() frees all allocated gates
 // - chunk size can be changed to any size (for testing purposes)
 // - gate entities AND inputs are allocated here
 //      - results in a netlist that is less likely to be scattered around memory
@@ -53,6 +54,7 @@ typedef struct logic_allocator_t {
 
     logic_input_chunk_t* input_first;
     logic_input_chunk_t* input_last;
+
 } logic_allocator_t;
 
 // perform logic gate allocator initialization
@@ -78,6 +80,11 @@ void logic_allocator_debug_info(void);
 logic_allocator_t* logic_allocator_get_reference(void);
 
 logic_gate_t* logic_gate_alloc_forward(void);
+
+// simulation callback support
+typedef void(*gate_simulate_callback)(void);
+void logic_gate_simulate_set_precallback(gate_simulate_callback cb);
+void logic_gate_simulate_set_postcallback(gate_simulate_callback cb);
 
 #ifdef __cplusplus
 } // extern "C"

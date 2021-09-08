@@ -8,7 +8,7 @@
 
 struct RISCV_Decoder_t {
 
-    RISCV_Instruction_Register_t ir;
+    RISCV_InstructionRegister_t ir;
 
     std::vector<Gate_t> instruction_bit_value; // FORWARD
 
@@ -58,9 +58,16 @@ struct RISCV_Decoder_t {
         BitwiseEqualDetect_t bed_0100000;
     } funct_7_cmp;
 
-
     RISCV_Immediates_t immediates;
 
+    struct {
+        std::vector<Gate_t> RS1;   // 5 bits, source register 1
+        std::vector<Gate_t> RS2;   // 5 bits, source register 2
+        std::vector<Gate_t> RD;    // 5 bits, destination register
+        std::vector<Gate_t> shamt; // 5 bits, shift amount
+        std::vector<Gate_t> imm32; // 32 bits, immediate value
+        std::vector<Gate_t> inst;  // 40 bits, one-hot encoded instruction
+    } decode_data;
 
     RISCV_Decoder_t(void);
 

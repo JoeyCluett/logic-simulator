@@ -24,11 +24,11 @@ if [[ $1 == "--help" ]]; then
     printf "    ${BLU}--help${RST}     -  print this help text\n"
     printf "    ${BLU}--release${RST}  -  generate Makefile with standard compile options\n"
     printf "    ${BLU}--asan${RST}     -  generate Makefile with debug options enabled (-g, -fsanitize=address)\n"
-    printf "    ${BLU}--valgrind${RST} -  generate Makefile with Valgrind-compat options enabled (-g)\n"
+    printf "    ${BLU}--valgrind${RST} -  generate Makefile with Valgrind-compat options enabled (-g, -DTRACE_ON_EXIT)\n"
     exit 0
 elif [[ $1 == "--asan" ]]; then
 
-    printf "\n${MAG}Generating Makefile with ASAN options enabled${RST}\n\n"
+    printf "\n${MAG}Generating Makefile with ${GRN}ASAN${RST} options enabled\n\n"
     STDOPTS="-I. -std=c++11 -O3 -g -fsanitize=address"
 
 elif [[ $1 == "--valgrind" ]]; then
@@ -92,4 +92,7 @@ else
     printf "\t./main\n\n" >> Makefile
 fi
 
+printf "\n    to run program: '${GRN}make${RST}' and '${GRN}make run${RST}'\n\n"
 
+echo "wHy NoT jUsT uSe cMaKe!?"
+echo "because i dont want to"

@@ -1,6 +1,6 @@
 #include <lib/modules/riscv/rv32i-instruction-register.h>
 
-RISCV_Instruction_Register_t::RISCV_Instruction_Register_t(void) 
+RISCV_InstructionRegister_t::RISCV_InstructionRegister_t(void) 
     :
         register_(VectorInit_(32, FLIPFLOP)),
         
@@ -45,6 +45,6 @@ RISCV_Instruction_Register_t::RISCV_Instruction_Register_t(void)
 
 }
 
-void RISCV_Instruction_Register_t::set_clk(Gate_t clk) {
+void RISCV_InstructionRegister_t::set_clk(Gate_t clk) {
     this->clk_input.add_input(clk);
 }

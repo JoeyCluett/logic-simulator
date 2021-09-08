@@ -5,7 +5,7 @@
 
 #include <lib/modules/BitwiseEqualDetect.h>
 
-struct RISCV_Instruction_Register_t {
+struct RISCV_InstructionRegister_t {
 
     std::vector<Gate_t> register_;
     
@@ -32,7 +32,7 @@ struct RISCV_Instruction_Register_t {
 
     Gate_t clk_input;
 
-    RISCV_Instruction_Register_t(void);
+    RISCV_InstructionRegister_t(void);
 
     void set_clk(Gate_t clk);
 

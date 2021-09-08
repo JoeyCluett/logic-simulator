@@ -39,6 +39,15 @@ RISCV_Decoder_t::RISCV_Decoder_t(void)
 
         funct_7_cmp {
             7, 7
+        },
+
+        decode_data {
+            VectorInit_(5,  FORWARD), // RS1
+            VectorInit_(5,  FORWARD), // RS2
+            VectorInit_(5,  FORWARD), // RD
+            VectorInit_(5,  FORWARD), // shamt
+            VectorInit_(32, FORWARD), // imm32
+            VectorInit_(40, FORWARD)  // inst
         }
 
     {
@@ -192,6 +201,14 @@ RISCV_Decoder_t::RISCV_Decoder_t(void)
             Or_(this->inst.LUI, this->inst.AUIPC));
     this->immediates.set_select(RV32I_Imm::_20_10_1_11_19_12,
             Or_(this->inst.JAL));
+
+
+    VectorConnect_(this->decode_data.RS1,   VectorSlice_(this->ir.register_, 15, 19+1));
+    VectorConnect_(this->decode_data.RS2,   VectorSlice_(this->ir.register_, 20, 24+1));
+    VectorConnect_(this->decode_data.RD,    VectorSlice_(this->ir.register_,  7, 11+1));
+    VectorConnect_(this->decode_data.shamt, VectorSlice_(this->ir.register_, 20, 24+1));
+    VectorConnect_(this->decode_data.imm32, this->immediates.bus);
+    VectorConnect_(this->decode_data.inst,  this->instruction_bit_value);
 }
 
 void RISCV_Decoder_t::set_data_in(std::vector<Gate_t> input) {
@@ -252,7 +269,8 @@ void RISCV_Decoder_t::Test(void) {
     decoder_0.set_data_in(sig);
     decoder_0.set_clk(clk);
 
-    // call this AFTER all connections are made and before the first call to logic_gate_simulate()
+    // call this AFTER all connections are made and before
+    // the first call to logic_gate_simulate()
     logic_gate_eval_forwards();
 
     clk.set(0);

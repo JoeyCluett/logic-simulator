@@ -12,6 +12,17 @@ logic_allocator_t global_logic_allocator;
 extern logic_gate_t* ONE;
 extern logic_gate_t* ZERO;
 
+static gate_simulate_callback pre_callback_;
+static gate_simulate_callback post_callback_;
+
+void logic_gate_simulate_set_precallback(gate_simulate_callback cb) {
+    pre_callback_ = cb;
+}
+
+void logic_gate_simulate_set_postcallback(gate_simulate_callback cb) {
+    post_callback_ = cb;
+}
+
 logic_allocator_t* logic_allocator_get_reference(void) {
     return &global_logic_allocator;
 }
@@ -253,6 +264,9 @@ void logic_init(void) {
 
     ZERO = logic_gate_new(logic_gate_constant);
     ZERO->output_value = 0;
+
+    pre_callback_ = NULL;
+    post_callback_ = NULL;
 }
 
 void logic_clean(void) {
