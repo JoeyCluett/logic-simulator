@@ -18,11 +18,20 @@
 #include <lib/cpp-api/signal-wrapper.h>
 #include <lib/cpp-api/throw-exception.h>
 
+#include <lib/modules/riscv/rv32i-cpu.h>
+
 using namespace std;
 
 int main(int argc, char** argv) {
 
-    RISCV_Decoder_t::Test();
+    //RISCV_Decoder_t::Test();
+
+    logic_init();
+
+    RISCV_Cpu_t cpu;
+
+    logic_allocator_debug_info();
+    logic_clean();
 
 /*
     {

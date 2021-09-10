@@ -10,3 +10,4 @@ txt/*
 .vscode/*
 Makefile
 
+lib/modules/agc/*

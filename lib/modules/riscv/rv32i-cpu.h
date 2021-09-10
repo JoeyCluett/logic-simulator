@@ -5,6 +5,7 @@
 
 #include <lib/modules/riscv/rv32i-decoder.h>
 #include <lib/modules/riscv/rv32i-register-file.h>
+#include <lib/modules/riscv/rv32i-mem-read.h>
 
 #include <vector>
 
